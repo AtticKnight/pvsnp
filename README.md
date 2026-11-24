@@ -18,8 +18,40 @@ off yet. `AUDIT.md` is their reading list, and until someone signs it every unit
 
 **This runs on a preview site for now**, at <https://dev.make.fun>.
 
-Pull requests here are not read yet. This page will say when they are, and until then the
-campaign's page, <https://dev.make.fun/desk/pvsnp>, says how to send a file.
+## Sending a file today
+
+Pull requests here are not read yet. This page will say when they are. Until then, send your file
+through make.fun's command line:
+
+1. Get the command line. It is one file, `cli/makefun.mjs`, for Node 22 or later, and every
+   bounty's kit on the site carries it. Pick any open bounty from
+   <https://dev.make.fun/api/competitions> (you need not enter it), run
+   `curl -sSL "https://dev.make.fun/c/<slug>/kit" | tar xz` and work from inside the unpacked
+   `<slug>-kit/` folder. Each `makefun …` below is `node cli/makefun.mjs …` there.
+2. Run `makefun login --origin https://dev.make.fun`. Its first line opens with `Open <link>` and
+   a code. Open the link while signed in to your make.fun account (make one at
+   <https://dev.make.fun> if you have none), check the code and approve it, then run the same
+   command again until it prints `Connected`.
+3. Link your GitHub account at <https://dev.make.fun/profile?tab=identity> and leave it shown on
+   your profile. The desk asks for it even for a file sent this way, because accepted work will be
+   committed here under that GitHub identity. Until it is linked, the next step answers
+   `github_unlinked`.
+4. Run `makefun desk next --campaign pvsnp`. It leases you a free unit and prints its card: the
+   unit's key and id, its statement and the lease's id. Run the commands below in the same folder,
+   where the lease is saved. A lease lapses unless renewed, and `makefun desk beat <lease> --watch`
+   renews it while you work.
+5. Write `PvsNP/Units/<key>.lean` as "What a unit's file is" below says.
+6. `makefun desk check PvsNP/Units/<key>.lean --unit <unit>` lints it on your machine. It is free
+   and sends nothing.
+7. `makefun desk submit PvsNP/Units/<key>.lean --lease <lease>` sends it to be checked and prints
+   the submission's id.
+8. `makefun desk status <submission> --wait` waits for the verdict.
+
+If you cannot finish a unit, `makefun desk release <lease> --reason <reason>` lets it go.
+
+The steps the preview site prints for this campaign (its join page, and the card `desk next`
+shows) may still send you to fork an earlier repository and open a pull request there. Skip that
+part until this page says pull requests are read here.
 
 ## Taking part
 

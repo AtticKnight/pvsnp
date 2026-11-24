@@ -5,7 +5,7 @@ they come from. Each Lean file listed names its source and that commit in its he
 it was modified; lake-manifest.json, JSON with no place for a comment, is said modified here.
 
 Adapted from pequalnp-proofs
-  https://github.com/brilliant-hq/pequalnp-proofs
+  https://github.com/open-goat/pequalnp-proofs (formerly brilliant-hq/pequalnp-proofs)
   commit 8df87a862bd9a618faecf10ba65bff72706442c9
   licensed under the Apache License, Version 2.0 (the text is LICENSE in this repository)
 
