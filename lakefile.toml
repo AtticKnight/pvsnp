@@ -1,0 +1,30 @@
+# The Lean tree of make.fun's P vs NP campaign: the definitions, the vendored library and the units.
+#
+# The pins are the checker's: lean-toolchain, lake-manifest.json and the Mathlib commit below are the ones the
+# checker's own Lean project uses, and a tree whose pins differ is refused. Lean is v4.36.0, Mathlib is at the commit
+# below, and lake-manifest.json pins the revisions of Mathlib's own dependencies. Never `lake update` here.
+#
+# The default target is the library `PvsNP`, whose root module PvsNP.lean imports the definitions root `PvsNP.Defs`
+# and nothing else. A unit module (PvsNP.Units.<key>) is a module of the same library, so
+# `lake build +PvsNP.Units.<key>` finds it, but nothing in the default target imports one: each unit is built on
+# its own.
+#
+# The second default target is the vendored library `CookLevin` (vendor/CookLevin/, MIT, its LICENSE beside it;
+# VENDORED.md names its upstream commit and every file changed), so a statement may name its definitions. Its root
+# module CookLevin.lean imports every module of it and holds its library axiom check; building it also runs its
+# reading-list check (CookLevin/ReadingList.lean). Its options are upstream's lakefile's.
+name = "pvsnp"
+defaultTargets = ["PvsNP", "CookLevin"]
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "fc4f59e577feb1a4956671bc04ac18aaaf8cd842"
+
+[[lean_lib]]
+name = "PvsNP"
+
+[[lean_lib]]
+name = "CookLevin"
+srcDir = "vendor/CookLevin"
+leanOptions = { autoImplicit = false, relaxedAutoImplicit = false }

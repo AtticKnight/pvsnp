@@ -1,0 +1,44 @@
+P vs NP in Lean
+
+Some files in this repository are adapted from other works. They are listed below with where
+they come from. Each Lean file listed names its source and that commit in its header and says how
+it was modified; lake-manifest.json, JSON with no place for a comment, is said modified here.
+
+Adapted from pequalnp-proofs
+  https://github.com/brilliant-hq/pequalnp-proofs
+  commit 8df87a862bd9a618faecf10ba65bff72706442c9
+  licensed under the Apache License, Version 2.0 (the text is LICENSE in this repository)
+
+  lake-manifest.json             the package pins of lean/lake-manifest.json (the Mathlib commit
+                                 and the revisions of its dependencies), under this project's
+                                 own name; modified
+  PvsNP/Defs/Machine.lean        follows ComputableInPolyTime in lean/PEqualNP/Defs/Base.lean;
+                                 modified
+  PvsNP/Defs/Classes.lean        follows DecidableInPolyTime in lean/PEqualNP/Defs/Base.lean;
+                                 modified
+  PvsNP/Defs/Reductions.lean     follows PolyTimeReducible, NPHard and NPComplete in
+                                 lean/PEqualNP/Defs/Base.lean; modified
+
+  That repository ships no NOTICE file.
+
+Adapted from formal-conjectures
+  https://github.com/google-deepmind/formal-conjectures
+  commit 1d3feb7ddcfd6d922c49a96b5134dba488b7de1c
+  licensed under the Apache License, Version 2.0 (the text is LICENSE in this repository)
+
+  PvsNP/Defs/Machine.lean        follows IsPolyTimeWithEncoding in
+                                 FormalConjecturesForMathlib/Computability/Complexity.lean;
+                                 modified
+  PvsNP/Defs/Classes.lean        follows NP and coNP in the same file; modified
+
+  That repository ships no NOTICE file. The source file named above carries the notice
+  "Copyright 2026 The Formal Conjectures Authors."
+
+Vendored: cook-levin-lean
+  https://github.com/DominicBreuker/cook-levin-lean
+  commit fb3e61c989d021f8a641a8d99155b953c62a1b74
+  licensed under the MIT License (the text is vendor/CookLevin/LICENSE, beside it)
+
+  vendor/CookLevin/ is a copy of that library. VENDORED.md names every file of it that was
+  modified to build with this tree's Lean and Mathlib; every other file is upstream's byte for
+  byte. Its licence covers the files under vendor/CookLevin/ only.
