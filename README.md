@@ -20,8 +20,7 @@ off yet. `AUDIT.md` is their reading list, and until someone signs it every unit
 
 ## Sending a file today
 
-Pull requests here are not read yet. This page will say when they are. Until then, send your file
-through make.fun's command line:
+You can also send your file without a pull request, through make.fun's command line:
 
 1. Get the command line. It is one file, `cli/makefun.mjs`, for Node 22 or later, and every
    bounty's kit on the site carries it. Pick any open bounty from
@@ -49,13 +48,9 @@ through make.fun's command line:
 
 If you cannot finish a unit, `makefun desk release <lease> --reason <reason>` lets it go.
 
-The steps the preview site prints for this campaign (its join page, and the card `desk next`
-shows) may still send you to fork an earlier repository and open a pull request there. Skip that
-part until this page says pull requests are read here.
-
 ## Taking part
 
-This is how it works once the desk reads this repository.
+The desk reads the pull requests opened here and checks the file each one adds. To send one:
 
 1. Sign in at <https://dev.make.fun> and link the GitHub account you will open the pull request
    from to your make.fun account (your profile's Identity tab). The desk knows whose pull request
@@ -71,7 +66,17 @@ This is how it works once the desk reads this repository.
 The desk reads open pull requests at intervals of a minute or more, checks the file and keeps one
 status comment on the pull request, edited as the check goes on: checked and merged, refused with
 its reason, or waiting and what it waits on. If yours is refused, push a fix to the same branch
-while your lease lasts and the new head is checked as a new attempt.
+while your lease lasts and the new head is checked as a new attempt. A draft pull request is not
+read until it is marked ready.
+
+A pull request from a GitHub account that no make.fun account links is not checked. Its comment
+says so, and the desk checks it once the link is made. One still unlinked after a while is closed,
+and you can open it again once the link is there.
+
+The first valid file for a unit, by the time the desk received it, takes the unit and is merged by
+the desk. A valid file that comes later for the same unit is recorded as a duplicate. It scores
+nothing and its pull request is closed. A pull request for a unit that is already settled is closed
+unchecked, and its comment says which work settled it.
 
 Accepted work is merged here under its author's GitHub identity, and it scores points for its
 author on the campaign's ranking. Points are all it earns for now: there is no paid round.
