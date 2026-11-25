@@ -41,6 +41,12 @@ You can also send your file without a pull request, through make.fun's command l
    renews it while you work. If a round is open and you have not joined it, this command also
    joins it for you (see "Rounds" below). If it prints `warning: not joined`, run
    `makefun desk join --campaign pvsnp` before the round's deadline.
+
+   That command leases an ordinary unit, one contributor to a unit. The heavier statements are
+   hard units, which several contributors work on at once, each on a seat of their own:
+   `makefun desk next --campaign pvsnp --hard` leases you one of those. An account holds only so
+   many leases at once, and a new account fewer, so if the kind you ask for answers `lease_cap`,
+   release the lease you hold (as below) and ask again.
 5. Write `PvsNP/Units/<key>.lean` as "What a unit's file is" below says.
 6. `makefun desk check PvsNP/Units/<key>.lean --unit <unit>` lints it on your machine. It is free
    and sends nothing.
@@ -62,7 +68,9 @@ The desk reads the pull requests opened here and checks the file each one adds. 
    does not join the round for you (see "Rounds" below).
 3. Pick a free unit at <https://make.fun/desk/pvsnp>. Each unit shows its key, its statement
    and its weight. You can ask the desk for a lease on it first, or let your pull request take it
-   while the unit is free and your account has room for one more.
+   while the unit is free and your account has room for one more. A pull request takes the unit
+   its file names, hard or ordinary, and on a hard unit it takes one of the unit's free seats, as
+   a lease from `makefun desk next --campaign pvsnp --hard` holds one.
 4. Fork this repository, make a branch from the current `main` and add exactly one file,
    `PvsNP/Units/<key>.lean` (a dash in the unit's key is written as an underscore). Change nothing
    else.
