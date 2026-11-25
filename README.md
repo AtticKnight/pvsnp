@@ -38,7 +38,9 @@ You can also send your file without a pull request, through make.fun's command l
 4. Run `makefun desk next --campaign pvsnp`. It leases you a free unit and prints its card: the
    unit's key and id, its statement and the lease's id. Run the commands below in the same folder,
    where the lease is saved. A lease lapses unless renewed, and `makefun desk beat <lease> --watch`
-   renews it while you work.
+   renews it while you work. If a round is open and you have not joined it, this command also
+   joins it for you (see "Rounds" below). If it prints `warning: not joined`, run
+   `makefun desk join --campaign pvsnp` before the round's deadline.
 5. Write `PvsNP/Units/<key>.lean` as "What a unit's file is" below says.
 6. `makefun desk check PvsNP/Units/<key>.lean --unit <unit>` lints it on your machine. It is free
    and sends nothing.
@@ -55,13 +57,16 @@ The desk reads the pull requests opened here and checks the file each one adds. 
 1. Sign in at <https://dev.make.fun> and link the GitHub account you will open the pull request
    from to your make.fun account (your profile's Identity tab). The desk knows whose pull request
    it is reading by that link.
-2. Pick a free unit at <https://dev.make.fun/desk/pvsnp>. Each unit shows its key, its statement
+2. If a round is open, join it once, before its deadline. Set up the command line as steps 1 and
+   2 of "Sending a file today" say, then run `makefun desk join --campaign pvsnp`. A pull request
+   does not join the round for you (see "Rounds" below).
+3. Pick a free unit at <https://dev.make.fun/desk/pvsnp>. Each unit shows its key, its statement
    and its weight. You can ask the desk for a lease on it first, or let your pull request take it
    while the unit is free and your account has room for one more.
-3. Fork this repository, make a branch from the current `main` and add exactly one file,
+4. Fork this repository, make a branch from the current `main` and add exactly one file,
    `PvsNP/Units/<key>.lean` (a dash in the unit's key is written as an underscore). Change nothing
    else.
-4. Open the pull request against `main`. One unit to a pull request.
+5. Open the pull request against `main`. One unit to a pull request.
 
 The desk reads open pull requests at intervals of a minute or more, checks the file and keeps one
 status comment on the pull request, edited as the check goes on: checked and merged, refused with
@@ -74,12 +79,28 @@ says so, and the desk checks it once the link is made. One still unlinked after 
 and you can open it again once the link is there.
 
 The first valid file for a unit, by the time the desk received it, takes the unit and is merged by
-the desk. A valid file that comes later for the same unit is recorded as a duplicate. It scores
-nothing and its pull request is closed. A pull request for a unit that is already settled is closed
-unchecked, and its comment says which work settled it.
+the desk. For a pull request, that time is when the desk first reads the commit it checks, not when
+the pull request was opened. A fix you push later is received when the desk reads it. A valid file
+that comes later for the same unit is recorded as a duplicate. It scores nothing and its pull
+request is closed. A pull request for a unit that is already settled is closed unchecked, and its
+comment says which work settled it.
 
 Accepted work is merged here under its author's GitHub identity, and it scores points for its
 author on the campaign's ranking. Points are all it earns for now: there is no paid round.
+
+## Rounds
+
+The campaign can also run a round: a window of time with a ranking of its own. A unit's points
+count in a round when the desk received its file inside the round's window and its author has
+joined the round. Join a round once, before its deadline, with this command:
+
+```sh
+makefun desk join --campaign pvsnp
+```
+
+When no round is open, the command says so and sends nothing. Until you join, your points count on
+the campaign's ranking but not in the round. Work the desk receives after a round's deadline does
+not count in that round.
 
 ## What a unit's file is
 
