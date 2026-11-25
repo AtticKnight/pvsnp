@@ -16,7 +16,7 @@ twice). Accepted means checked, and nothing more is claimed for a unit.
 off yet. `AUDIT.md` is their reading list, and until someone signs it every unit carries the label
 "not yet human-audited".
 
-**This runs on a preview site for now**, at <https://dev.make.fun>.
+**This runs on make.fun**, at <https://make.fun>.
 
 ## Sending a file today
 
@@ -24,14 +24,14 @@ You can also send your file without a pull request, through make.fun's command l
 
 1. Get the command line. It is one file, `cli/makefun.mjs`, for Node 22 or later, and every
    bounty's kit on the site carries it. Pick any open bounty from
-   <https://dev.make.fun/api/competitions> (you need not enter it), run
-   `curl -sSL "https://dev.make.fun/c/<slug>/kit" | tar xz` and work from inside the unpacked
+   <https://make.fun/api/competitions> (you need not enter it), run
+   `curl -sSL "https://make.fun/c/<slug>/kit" | tar xz` and work from inside the unpacked
    `<slug>-kit/` folder. Each `makefun …` below is `node cli/makefun.mjs …` there.
-2. Run `makefun login --origin https://dev.make.fun`. Its first line opens with `Open <link>` and
+2. Run `makefun login --origin https://make.fun`. Its first line opens with `Open <link>` and
    a code. Open the link while signed in to your make.fun account (make one at
-   <https://dev.make.fun> if you have none), check the code and approve it, then run the same
+   <https://make.fun> if you have none), check the code and approve it, then run the same
    command again until it prints `Connected`.
-3. Link your GitHub account at <https://dev.make.fun/profile?tab=identity> and leave it shown on
+3. Link your GitHub account at <https://make.fun/profile?tab=identity> and leave it shown on
    your profile. The desk asks for it even for a file sent this way, because accepted work will be
    committed here under that GitHub identity. Until it is linked, the next step answers
    `github_unlinked`.
@@ -54,13 +54,13 @@ If you cannot finish a unit, `makefun desk release <lease> --reason <reason>` le
 
 The desk reads the pull requests opened here and checks the file each one adds. To send one:
 
-1. Sign in at <https://dev.make.fun> and link the GitHub account you will open the pull request
+1. Sign in at <https://make.fun> and link the GitHub account you will open the pull request
    from to your make.fun account (your profile's Identity tab). The desk knows whose pull request
    it is reading by that link.
 2. If a round is open, join it once, before its deadline. Set up the command line as steps 1 and
    2 of "Sending a file today" say, then run `makefun desk join --campaign pvsnp`. A pull request
    does not join the round for you (see "Rounds" below).
-3. Pick a free unit at <https://dev.make.fun/desk/pvsnp>. Each unit shows its key, its statement
+3. Pick a free unit at <https://make.fun/desk/pvsnp>. Each unit shows its key, its statement
    and its weight. You can ask the desk for a lease on it first, or let your pull request take it
    while the unit is free and your account has room for one more.
 4. Fork this repository, make a branch from the current `main` and add exactly one file,

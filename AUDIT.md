@@ -1,7 +1,7 @@
 # AUDIT: the reading list of the definitions root
 
 **Status: not yet human-audited.** No person has signed this list, so the campaign's page
-(<https://dev.make.fun/desk/pvsnp>) shows "not yet human-audited" beside every unit of this campaign.
+(<https://make.fun/desk/pvsnp>) shows "not yet human-audited" beside every unit of this campaign.
 
 A unit's statement is checked by the Lean kernels: a credited unit means its file was checked
 against the posted statement, nothing more. What a statement *means* rests on the definitions it
