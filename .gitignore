@@ -1,0 +1,31 @@
+# A pull request adds one file, PvsNP/Units/<key>.lean. Everything below is made on your machine
+# while you work and stays out of this repository.
+
+# Lean and Lake build output: the compiled modules and the downloaded Mathlib.
+.lake/
+/build/
+/lake-packages/
+
+# make.fun's command line. `makefun desk next` saves each lease, with the nonce that lets you
+# submit under it, to .makefun/desk/<lease>.json in the folder it runs in; never commit one.
+.makefun/
+# A bounty's kit unpacked here (`curl ... | tar xz` makes <slug>-kit/), the command line copied
+# out of it, and the kit's keypair beside it: the keypair is a secret key.
+*-kit/
+/cli/makefun.mjs
+makefun-keypair.json
+
+# Editors.
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.#*
+\#*\#
+
+# Operating systems.
+.DS_Store
+._*
+Thumbs.db
+desktop.ini
