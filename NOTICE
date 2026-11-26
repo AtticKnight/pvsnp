@@ -19,6 +19,11 @@ Adapted from pequalnp-proofs
   PvsNP/Defs/Reductions.lean     follows PolyTimeReducible, NPHard and NPComplete in
                                  lean/PEqualNP/Defs/Base.lean; modified
 
+  The unit file PvsNP/Units/m2_polytime_comp.lean, which the desk added here once it was
+  checked, joins lean/PEqualNP/Library/Machines/Run.lean, Compose.lean and ComposeRun.lean and
+  follows lean/PEqualNP/Library/L007.lean; modified. A unit file that copies its body keeps that
+  header and adds that it was copied.
+
   That repository ships no NOTICE file.
 
 Adapted from formal-conjectures

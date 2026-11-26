@@ -18,6 +18,69 @@ off yet. `AUDIT.md` is their reading list, and until someone signs it every unit
 
 **This runs on make.fun**, at <https://make.fun>.
 
+## Read this first: the open round
+
+The paid round `desk-pvsnp-20261127` is open now. It opened early, on 26 November at 02:58 UTC,
+though its name still says 27 November. It takes files until 28 November 00:00 UTC. A file the
+desk receives in that window counts in the round once you have joined it (see "Rounds"). Its
+page, with the prizes and the rules, is <https://make.fun/bounty/desk-pvsnp-20261127>.
+
+### The composition is settled: copy it
+
+The unit `m2_polytime_comp` (polynomial-time computable functions compose) is settled. Its
+checked file is `PvsNP/Units/m2_polytime_comp.lean` in this repository. Several open units need
+that result, and you do not have to write it again.
+
+A unit's file cannot import another unit yet. It imports only `Mathlib`, `PvsNP.Defs` and
+`CookLevin`, so you copy the composition into your own file:
+
+1. Start `PvsNP/Units/<key>.lean` with those three imports. Under them put the settled file's
+   header comment as it stands: it names the work it was adapted from, the commit and the
+   licence. Add a line to it saying you copied the body from `PvsNP/Units/m2_polytime_comp.lean`
+   of this repository into your unit's namespace.
+2. Copy everything from its line `namespace PvsNP.Units.m2_polytime_comp` down to its line
+   `end PvsNP.Units.m2_polytime_comp`, and rename both lines to `PvsNP.Units.<key>`. The checker
+   wants every helper inside `namespace PvsNP.Units.<key>` (or `PvsNP.Units.<key>_aux`). A
+   namespace of any other name at the top level is refused.
+3. The settled file's closing theorem, `theorem PvsNP.Units.m2_polytime_comp`, cannot stay at the
+   top level: there the only theorem is your unit's, and it comes last. Move that theorem inside
+   your block, above the `end` line, under a short name such as `polytime_comp`. In its last line
+   write `comp_polyTime` in place of `PvsNP.Units.m2_polytime_comp.comp_polyTime`.
+4. After the block write `theorem PvsNP.Units.<key>` with the posted statement, and use
+   `PvsNP.Units.<key>.polytime_comp` wherever your proof composes two functions.
+
+### Units the composition opens
+
+For each of these there is upstream work to follow in pequalnp-proofs, at
+<https://github.com/open-goat/pequalnp-proofs/tree/8df87a862bd9a618faecf10ba65bff72706442c9/lean/PEqualNP/Library>.
+Those files are written for that project's definitions, which differ from `PvsNP.Defs` in small
+ways (how strings and answers are written, the order of some arguments). Read them as a plan and
+adapt them. They are Apache-2.0: if you copy from one, name it and the commit in your header, as
+the settled file does.
+
+| Unit | Weight | Kind | It needs, besides the composition | Upstream |
+| --- | --- | --- | --- | --- |
+| `m2_karp_trans` | 1 | ordinary | nothing | `L009.lean` |
+| `m2_p_down_closed` | 1 | ordinary | nothing | `L016.lean` |
+| `m2_p_subset_np` | 4 | hard | a machine that keeps the first part of a pair | `L010.lean`, with `Machines/FilterMap.lean` |
+| `m2_npc_in_p` | 1 | ordinary | P inside NP, and P closed downward | `L018.lean`, on `L010.lean` and `L016.lean` |
+| `m2_np_down_closed` | 8 | hard | a machine that runs a function on the first part of a pair, and a bound on output length | `L017.lean`, with `Machines/Pairing.lean`, `Machines/ReduceNP.lean` and what they import |
+| `m2_npc_in_conp` | 1 | ordinary | NP closed downward, and that a reduction also reduces the complements | about fifteen lines on `L017.lean`, with `L040.lean` |
+
+The first two are short once the composition is in your file. `FilterMap.lean` holds a
+`@[reducible] def`, which the checker refuses: write it as an `abbrev`.
+
+An ordinary unit goes to one contributor at a time. To ask for one by its key, run
+`makefun desk next --campaign pvsnp --unit <key>`. If someone holds it, the desk says so: pick
+another, or come back when the lease lapses.
+
+### Build it before you send it
+
+The desk builds every file it is sent, and a refused check costs you allowance for a while.
+`makefun desk check` only lints your file; it does not build it. So build it first, with Lean 4
+`v4.36.0` and Mathlib at commit `fc4f59e577feb1a4956671bc04ac18aaaf8cd842`, the pins of this
+repository: clone it, put your file under `PvsNP/Units/` and follow "Building it yourself" below.
+
 ## Sending a file today
 
 You can also send your file without a pull request, through make.fun's command line:
@@ -94,7 +157,8 @@ request is closed. A pull request for a unit that is already settled is closed u
 comment says which work settled it.
 
 Accepted work is merged here under its author's GitHub identity, and it scores points for its
-author on the campaign's ranking. Points are all it earns for now: there is no paid round.
+author on the campaign's ranking. In a round you have joined they also count on the round's
+ranking, and a paid round pays its prizes by that ranking (see "Rounds").
 
 ## Rounds
 
