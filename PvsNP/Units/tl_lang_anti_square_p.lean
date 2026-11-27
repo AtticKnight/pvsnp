@@ -31,9 +31,13 @@ theorem decider :
     ({x : List Bool | ∃ y : List Bool, x = y ++ y.map not} : Language Bool) ∈ PvsNP.P := by
   have cut := cpt_app2 cpt_half (cpt_cons1 false cpt_id)
   have left : PvsNP.PolyTimeComputable PvsNP.encodeString PvsNP.encodeString
-      (fun x : List Bool => (halves x).1) := cpt_comp cut cpt_unpairB1
+      (fun x : List Bool => (halves x).1) := by
+    unfold halves
+    exact cpt_comp (f := fun x => half x ++ false :: x) (g := fun s => (unpairB s).1) cut cpt_unpairB1
   have right : PvsNP.PolyTimeComputable PvsNP.encodeString PvsNP.encodeString
-      (fun x : List Bool => (halves x).2) := cpt_comp cut cpt_unpairB2
+      (fun x : List Bool => (halves x).2) := by
+    unfold halves
+    exact cpt_comp (f := fun x => half x ++ false :: x) (g := fun s => (unpairB s).2) cut cpt_unpairB2
   have pair := PvsNP.Units.m2_pair_build_polytime _ _
     (PvsNP.Units.m2_pair_build_polytime.cpt_comp left mapNot) right
   refine ⟨_, PvsNP.Units.m2_pair_build_polytime.cpt_comp pair PvsNP.Units.m2_eq_polytime, ?_⟩
