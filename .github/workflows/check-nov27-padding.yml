@@ -1,4 +1,4 @@
-name: Check triangular lengths, exponential padding and reductions
+name: Check the Hamming relation, bit transducer and closure proofs
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
         with:
           auto-config: "false"
           build: "true"
-          build-args: "+PvsNP.Units.tl_lang_len_tri_p +PvsNP.Units.m2_exp_poly_padding_iff +PvsNP.Units.m2_expc_compl +PvsNP.Units.m2_nphard_iff_compl_conphard +PvsNP.Units.m2_join_karp_iff_both +PvsNP.Units.m2_join_self_karp_equiv +PvsNP.Units.m2_join_swap_karp"
+          build-args: "+PvsNP.Units.tf_fun_zip_with +PvsNP.Units.tr_rel_hamming_le +PvsNP.Units.m2_fixed_quotient_p_np +PvsNP.Units.m2_fixed_quotient_conp_exp +PvsNP.Units.m2_self_concat_preimage +PvsNP.Units.m2_np_eq_conp_iff_conphard_in_np +PvsNP.Units.m2_np_conp_no_nphard +PvsNP.Units.m2_np_eq_exp_np_conp +PvsNP.Units.m2_exp_iff_reduces_to_expc"
           use-mathlib-cache: "true"
           test: "false"
           lint: "false"
