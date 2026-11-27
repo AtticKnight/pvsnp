@@ -77,8 +77,9 @@ private theorem read_after (t a b : ℕ) (h : a = 0 ∨ b < 2 ^ t) :
   induction t generalizing a b with
   | zero =>
     have stop : a = 0 ∨ b = 0 := by simpa using h
+    have emptyValue : val [] = 0 := rfl
     rcases stop with rfl | rfl <;>
-      simp [valueOut, unpairB_pairB, binAdd, val_bits]
+      simp [valueOut, unpairB_pairB, binAdd, val_bits, emptyValue]
   | succ t ih =>
     rw [Function.iterate_succ_apply, twice_bits]
     have nextStep : a % b = 0 ∨ b % (a % b) < 2 ^ t := by

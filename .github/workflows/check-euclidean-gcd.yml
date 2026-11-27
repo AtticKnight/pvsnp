@@ -2,7 +2,7 @@ name: Verify the binary Euclidean algorithm
 
 on:
   push:
-    branches: [verify/binary-gcd-two-remainders]
+    branches: [verify/binary-gcd-zero-word]
 
 permissions:
   contents: read
