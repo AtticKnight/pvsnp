@@ -1,0 +1,28 @@
+name: Check mixed binary and unary subtraction
+
+on:
+  push:
+    branches: [verify/nov27-unary-binary-subtraction]
+
+permissions:
+  contents: read
+
+jobs:
+  proofs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      LEAN_NUM_THREADS: "3"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Check the proof files with the pinned Lean and Mathlib versions
+        uses: leanprover/lean-action@ba3fdfe5c4476c925da13bf11a005ddb47e47aee
+        with:
+          auto-config: "false"
+          build: "true"
+          build-args: "+PvsNP.Units.m2_tm_binary_sub_unary"
+          use-mathlib-cache: "true"
+          test: "false"
+          lint: "false"
