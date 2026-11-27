@@ -37,7 +37,7 @@ theorem PvsNP.Units.tl_lang_val_tri_p :
   let v := Nat.ofDigits (2 : ℕ) (x.map Bool.toNat)
   change (∃ k : ℕ, 2 * v = k * (k + 1)) ↔
     ∃ a : ℕ, Nat.ofDigits 2 (([true, false, false] ++ x).map Bool.toNat) = a ^ 2
-  have prefix : Nat.ofDigits (2 : ℕ) (([true, false, false] ++ x).map Bool.toNat) = 1 + 8 * v := by
+  have hval : Nat.ofDigits (2 : ℕ) (([true, false, false] ++ x).map Bool.toNat) = 1 + 8 * v := by
     simp [v, Nat.ofDigits_cons] <;> ring
-  rw [prefix]
+  rw [hval]
   exact tl_lang_val_tri_p.triangle_iff_square v
