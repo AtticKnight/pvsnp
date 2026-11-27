@@ -1,0 +1,28 @@
+name: Check nine constructive statements
+
+on:
+  push:
+    branches: [verify/nov27-classes]
+
+permissions:
+  contents: read
+
+jobs:
+  proofs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      LEAN_NUM_THREADS: "3"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Check the proof files with the pinned Lean and Mathlib versions
+        uses: leanprover/lean-action@ba3fdfe5c4476c925da13bf11a005ddb47e47aee
+        with:
+          auto-config: "false"
+          build: "true"
+          build-args: "+PvsNP.Units.m2_karp_equiv_npc_iff +PvsNP.Units.m2_karp_self_compl +PvsNP.Units.m2_nexpc_in_exp_iff +PvsNP.Units.m2_npc_reduces_characterizes +PvsNP.Units.m2_p_eq_np_iff_npc_in_p +PvsNP.Units.m2_join_assoc_karp +PvsNP.Units.tf_fun_append_all +PvsNP.Units.tf_fun_prepend_all +PvsNP.Units.tf_fun_add_const"
+          use-mathlib-cache: "true"
+          test: "false"
+          lint: "false"
