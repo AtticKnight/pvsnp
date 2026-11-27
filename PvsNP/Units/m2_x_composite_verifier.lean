@@ -11,9 +11,9 @@ import PvsNP.Units.m2_tm_pair_swap_polytime
 import PvsNP.Units.tf_fun_pair_mod
 import PvsNP.Units.tl_lang_composite_np
 
-namespace PvsNP.Units
+namespace PvsNP.Units.m2_x_composite_verifier
 
-namespace m2_x_composite_verifier
+open PvsNP.Units
 
 open tl_lang_composite_np (val val_bits cpt_bool_eq_const)
 
@@ -33,17 +33,25 @@ theorem verifier_poly :
       (fun p : List Bool × List Bool => decide (1 < val p.2 ∧ val p.2 < val p.1 ∧ val p.2 ∣ val p.1)) := by
   have oneWord : PvsNP.PolyTimeComputable PvsNP.encodePair PvsNP.encodeString
       (fun _ : List Bool × List Bool => [true]) :=
-    m2_polytime_comp _ _ _ _ _ m2_pair_split_polytime.1 (m2_const_polytime [true])
+    m2_polytime_comp PvsNP.encodePair PvsNP.encodeString PvsNP.encodeString
+      (fun p : List Bool × List Bool => p.1) (fun _ => [true])
+      m2_pair_split_polytime.1 (m2_const_polytime [true])
   have oneAndWitness := m2_tm_pair_fork_polytime _ _ oneWord m2_pair_split_polytime.2.1
   have lower : PvsNP.PolyTimeComputable PvsNP.encodePair PvsNP.encodeAnswer
       (fun p : List Bool × List Bool => decide (1 < val p.2)) :=
-    m2_polytime_comp _ _ _ _ _ oneAndWitness m2_tm_binary_lt
+    m2_polytime_comp PvsNP.encodePair PvsNP.encodePair PvsNP.encodeAnswer
+      (fun p : List Bool × List Bool => ([true], p.2))
+      (fun q : List Bool × List Bool => decide (val q.1 < val q.2)) oneAndWitness m2_tm_binary_lt
   have upper : PvsNP.PolyTimeComputable PvsNP.encodePair PvsNP.encodeAnswer
       (fun p : List Bool × List Bool => decide (val p.2 < val p.1)) :=
-    m2_polytime_comp _ _ _ _ _ m2_tm_pair_swap_polytime m2_tm_binary_lt
+    m2_polytime_comp PvsNP.encodePair PvsNP.encodePair PvsNP.encodeAnswer
+      (fun p : List Bool × List Bool => (p.2, p.1))
+      (fun q : List Bool × List Bool => decide (val q.1 < val q.2)) m2_tm_pair_swap_polytime m2_tm_binary_lt
   have remZero : PvsNP.PolyTimeComputable PvsNP.encodePair PvsNP.encodeAnswer
       (fun p : List Bool × List Bool => decide (Nat.bits (val p.1 % val p.2) = [])) :=
-    m2_polytime_comp _ _ _ _ _ tf_fun_pair_mod (cpt_bool_eq_const [])
+    m2_polytime_comp PvsNP.encodePair PvsNP.encodeString PvsNP.encodeAnswer
+      (fun p : List Bool × List Bool => Nat.bits (val p.1 % val p.2))
+      (fun xs : List Bool => decide (xs = [])) tf_fun_pair_mod (cpt_bool_eq_const [])
   have hiAndRem := m2_tm_pair_bool_combine Bool.and _ _ upper remZero
   have allThree := m2_tm_pair_bool_combine Bool.and _ _ lower hiAndRem
   have agree :
@@ -55,12 +63,10 @@ theorem verifier_poly :
     simp only [Bool.and_eq_true, decide_eq_true_eq, bits_empty_iff, Nat.dvd_iff_mod_eq_zero]
   rwa [agree] at allThree
 
-end m2_x_composite_verifier
-
 open tl_lang_composite_np (val val_bits val_lt_two_pow bits_length_le_of_lt_two_pow)
 
 /-- A proper divisor itself is a certificate no longer than the claimed composite. -/
-theorem m2_x_composite_verifier :
+theorem certificate_correct :
     PvsNP.PolyTimeVerifier
       ({x : List Bool | ∃ a b : ℕ, 1 < a ∧ 1 < b ∧ a * b = Nat.ofDigits (2 : ℕ) (x.map Bool.toNat)} : Language Bool)
       (fun p : List Bool × List Bool => decide
@@ -90,4 +96,15 @@ theorem m2_x_composite_verifier :
       rcases cases_b with rfl | rfl <;> simp_all
     exact ⟨val w, b, ha, hb', hb.symm⟩
 
-end PvsNP.Units
+end PvsNP.Units.m2_x_composite_verifier
+
+/-- A length-bounded proper divisor verifies that the binary input is composite. -/
+theorem PvsNP.Units.m2_x_composite_verifier :
+    PvsNP.PolyTimeVerifier
+      ({x : List Bool | ∃ a b : ℕ, 1 < a ∧ 1 < b ∧ a * b = Nat.ofDigits (2 : ℕ) (x.map Bool.toNat)} : Language Bool)
+      (fun p : List Bool × List Bool => decide
+        (1 < Nat.ofDigits (2 : ℕ) (p.2.map Bool.toNat) ∧
+         Nat.ofDigits (2 : ℕ) (p.2.map Bool.toNat) < Nat.ofDigits (2 : ℕ) (p.1.map Bool.toNat) ∧
+         Nat.ofDigits (2 : ℕ) (p.2.map Bool.toNat) ∣ Nat.ofDigits (2 : ℕ) (p.1.map Bool.toNat)))
+      Polynomial.X :=
+  PvsNP.Units.m2_x_composite_verifier.certificate_correct
