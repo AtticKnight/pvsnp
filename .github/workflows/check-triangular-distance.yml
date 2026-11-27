@@ -2,7 +2,7 @@ name: Check triangular recognition, count rotation and bounded Hamming distance
 
 on:
   push:
-    branches: [verify/triangular-rotate-hamming-v2]
+    branches: [verify/count-rotation-and-bounded-distance]
 
 permissions:
   contents: read

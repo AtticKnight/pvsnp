@@ -15,4 +15,10 @@ theorem PvsNP.Units.tf_fun_rotate_count :
   have rotate := m2_polytime_comp PvsNP.encodeString PvsNP.encodePair PvsNP.encodeString
     (fun x : List Bool => (List.replicate (x.count true) true, x))
     (fun p : List Bool × List Bool => p.2.rotate p.1.length) pair tf_fun_pair_rotate
-  simpa only [Function.comp, List.length_replicate] using rotate
+  have composed : ((fun p : List Bool × List Bool => p.2.rotate p.1.length) ∘
+      (fun x : List Bool => (List.replicate (x.count true) true, x))) =
+      (fun x : List Bool => x.rotate (x.count true)) := by
+    funext x
+    simp
+  rw [composed] at rotate
+  exact rotate
