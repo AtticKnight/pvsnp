@@ -1,4 +1,4 @@
-name: Check constructive inversion and word-power proofs
+name: Check exponential factors, bounded edits and binary arithmetic
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
         with:
           auto-config: "false"
           build: "true"
-          build-args: "+PvsNP.Units.m2_p_eq_np_inverts_honest +PvsNP.Units.tl_lang_anti_square_p +PvsNP.Units.tl_lang_cube_p +PvsNP.Units.tl_lang_len_pow_p"
+          build-args: "+PvsNP.Units.tc_exp_some_prefix +PvsNP.Units.tc_exp_some_factor +PvsNP.Units.tc_closure_every_factor_np +PvsNP.Units.tc_closure_del_one_p +PvsNP.Units.tl_lang_count_coprime_p +PvsNP.Units.tf_fun_pair_sub"
           use-mathlib-cache: "true"
           test: "false"
           lint: "false"
