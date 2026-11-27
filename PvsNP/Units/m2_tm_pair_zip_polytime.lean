@@ -1,0 +1,238 @@
+import Mathlib
+import PvsNP.Defs
+import CookLevin
+import PvsNP.Units.fr_ladner
+import PvsNP.Units.m2_ite_polytime
+import PvsNP.Units.m2_dfa_in_p
+import PvsNP.Units.m2_polytime_comp
+
+/-
+Interleaving the two strings of a pair bit by bit, in polynomial time (TM2).
+
+Architecture: the state is one string, `pairB (pairB a b) acc`, holding the two
+not-yet-consumed tails `a`, `b` and the output `acc` built so far. One step pops the
+head of each tail (when both are nonempty) and appends the pair `[x, y]` to `acc`;
+when either tail is empty the step is the identity. Iterating the step `|a|` times
+(the settled unit `m2_iterate_polytime`, over the settled unit `fr_ladner`'s
+`pairB`/`unpairB` and `Iter.iter_polyTime`) consumes the whole pair and leaves the
+interleaving in `acc`. The step is polynomial-time by case analysis on the two heads
+(the settled unit `m2_ite_polytime`, with emptiness and head tests from finite
+automata via `m2_dfa_in_p`); the two tails are split off with `cpt_unpairB1_1` /
+`cpt_unpairB2_1` and the pieces are joined with `cpt_pairB2` / `cpt_app2`.
+
+This follows the shape of the settled unit `m2_zip_bne_polytime` (same state, same
+iteration, same case analysis), with a two-bit push `[x, y]` in place of its one-bit
+push `x != y`, and the flattening that the push makes necessary.
+-/
+
+namespace PvsNP.Units.m2_tm_pair_zip_polytime
+
+open PvsNP.Units.fr_ladner.PEqualNP.Library.Universal
+open PvsNP.Units.fr_ladner.PEqualNP.Library.Machines
+
+private theorem encodePair_eq :
+    PvsNP.Units.fr_ladner.PEqualNP.Library.encodePair = PvsNP.encodePair := by
+  funext ⟨a, b⟩
+  simp [PvsNP.encodePair, PvsNP.Units.fr_ladner.PEqualNP.Library.encodePair,
+    Computability.encodingProd, Computability.encodingList]
+
+private theorem unpairB_len_bound (s : List Bool) :
+    (unpairB s).1.length + (unpairB s).1.length + (unpairB s).2.length ≤ s.length := by
+  simp only [unpairB, List.length_take, List.length_drop, List.length_tail]
+  have hsplit : (s.takeWhile id).length + (s.dropWhile id).length = s.length := by
+    rw [← List.length_append, List.takeWhile_append_dropWhile]
+  omega
+
+private theorem pairB_length (a b : List Bool) :
+    (pairB a b).length = a.length + a.length + b.length + 1 := by
+  simp only [pairB, List.length_append, un_length, List.length_cons]
+  omega
+
+private theorem nonempty_poly :
+    PvsNP.PolyTimeComputable PvsNP.encodeString PvsNP.encodeAnswer
+      (fun x : List Bool => !x.isEmpty) := by
+  obtain ⟨c, hc, hdec⟩ := PvsNP.Units.m2_dfa_in_p Bool (fun _ _ => true) false id
+  have hfold_true : ∀ y : List Bool, y.foldl (fun _ _ => true) true = true := by
+    intro y; induction y with | nil => rfl | cons _ _ ih => exact ih
+  have heq : c = fun x : List Bool => !x.isEmpty := by
+    funext x
+    have hx := hdec x
+    change id (x.foldl (fun _ _ => true) false) = true ↔ c x = true at hx
+    cases x with
+    | nil =>
+      simp only [List.foldl_nil, id, List.isEmpty_nil, Bool.not_true] at hx ⊢
+      cases hcx : c [] <;> simp_all
+    | cons b y =>
+      simp only [List.foldl_cons, hfold_true, id, List.isEmpty_cons, Bool.not_false] at hx ⊢
+      exact hx.1 trivial
+  rwa [← heq]
+
+private theorem headD_false_poly :
+    PvsNP.PolyTimeComputable PvsNP.encodeString PvsNP.encodeAnswer
+      (fun x : List Bool => x.headD false) := by
+  let δ : Option Bool → Bool → Option Bool :=
+    fun q b => match q with | none => some b | some c => some c
+  obtain ⟨c, hc, hdec⟩ := PvsNP.Units.m2_dfa_in_p (Option Bool) δ none (fun q => q == some true)
+  have hfold_some : ∀ (a : Bool) (y : List Bool), y.foldl δ (some a) = some a := by
+    intro a y; induction y with | nil => rfl | cons _ _ ih => exact ih
+  have heq : c = fun x : List Bool => x.headD false := by
+    funext x
+    have hx := hdec x
+    change ((x.foldl δ none == some true) = true) ↔ c x = true at hx
+    cases x with
+    | nil =>
+      simp only [List.foldl_nil, List.headD_nil] at hx ⊢
+      cases hcx : c [] <;> simp_all
+    | cons b y =>
+      simp only [List.foldl_cons, δ, hfold_some, List.headD_cons] at hx ⊢
+      cases b with
+      | false => cases hcx : c (false :: y) <;> simp_all
+      | true => exact hx.1 (by decide)
+  rwa [← heq]
+
+/-- The not-yet-consumed tail of the first string, read off the state. -/
+private def sA (s : List Bool) : List Bool := (unpairB (unpairB s).1).1
+/-- The not-yet-consumed tail of the second string, read off the state. -/
+private def sB (s : List Bool) : List Bool := (unpairB (unpairB s).1).2
+/-- The output built so far, read off the state. -/
+private def sAcc (s : List Bool) : List Bool := (unpairB s).2
+
+/-- One interleaving step: pop the head of each tail and append the pair `[x, y]` to
+the output; the identity when either tail is empty. -/
+private def zStep (s : List Bool) : List Bool :=
+  if !(sA s).isEmpty = true then
+    if !(sB s).isEmpty = true then
+      if (sA s).headD false = true then
+        if (sB s).headD false = true then
+          pairB (pairB (sA s).tail (sB s).tail) (sAcc s ++ [true, true])
+        else
+          pairB (pairB (sA s).tail (sB s).tail) (sAcc s ++ [true, false])
+      else
+        if (sB s).headD false = true then
+          pairB (pairB (sA s).tail (sB s).tail) (sAcc s ++ [false, true])
+        else
+          pairB (pairB (sA s).tail (sB s).tail) (sAcc s ++ [false, false])
+    else
+      pairB (pairB (sA s) (sB s)) (sAcc s)
+  else
+    pairB (pairB (sA s) (sB s)) (sAcc s)
+
+private theorem zStep_len (s : List Bool) : (zStep s).length ≤ s.length + 5 := by
+  have h1 := unpairB_len_bound s
+  have h2 := unpairB_len_bound (unpairB s).1
+  have ha : (sA s).tail.length ≤ (sA s).length := by simp
+  have hb : (sB s).tail.length ≤ (sB s).length := by simp
+  have hbound : 4 * (sA s).length + 2 * (sB s).length + (sAcc s).length ≤ s.length := by
+    unfold sA sB sAcc; omega
+  unfold zStep
+  split_ifs <;>
+    simp only [pairB_length, List.length_append, List.length_cons, List.length_nil] <;>
+    omega
+
+private theorem zStep_poly :
+    PvsNP.PolyTimeComputable PvsNP.encodeString PvsNP.encodeString zStep := by
+  have hA : PvsNP.PolyTimeComputable PvsNP.encodeString PvsNP.encodeString sA :=
+    cpt_unpairB1_1 cpt_unpairB1
+  have hB : PvsNP.PolyTimeComputable PvsNP.encodeString PvsNP.encodeString sB :=
+    cpt_unpairB2_1 cpt_unpairB1
+  have hAcc : PvsNP.PolyTimeComputable PvsNP.encodeString PvsNP.encodeString sAcc :=
+    cpt_unpairB2
+  have hAne := PvsNP.Units.m2_polytime_comp PvsNP.encodeString PvsNP.encodeString PvsNP.encodeAnswer
+    sA (fun x => !x.isEmpty) hA nonempty_poly
+  have hBne := PvsNP.Units.m2_polytime_comp PvsNP.encodeString PvsNP.encodeString PvsNP.encodeAnswer
+    sB (fun x => !x.isEmpty) hB nonempty_poly
+  have hAhd := PvsNP.Units.m2_polytime_comp PvsNP.encodeString PvsNP.encodeString PvsNP.encodeAnswer
+    sA (fun x => x.headD false) hA headD_false_poly
+  have hBhd := PvsNP.Units.m2_polytime_comp PvsNP.encodeString PvsNP.encodeString PvsNP.encodeAnswer
+    sB (fun x => x.headD false) hB headD_false_poly
+  have hpairT := cpt_pairB2 (cpt_tail1 hA) (cpt_tail1 hB)
+  have hpushTT := cpt_pairB2 hpairT (cpt_app2 hAcc (cpt_const [true, true]))
+  have hpushTF := cpt_pairB2 hpairT (cpt_app2 hAcc (cpt_const [true, false]))
+  have hpushFT := cpt_pairB2 hpairT (cpt_app2 hAcc (cpt_const [false, true]))
+  have hpushFF := cpt_pairB2 hpairT (cpt_app2 hAcc (cpt_const [false, false]))
+  have hstay := cpt_pairB2 (cpt_pairB2 hA hB) hAcc
+  have h1 := PvsNP.Units.m2_ite_polytime _ _ _ hBhd hpushTT hpushTF
+  have h2 := PvsNP.Units.m2_ite_polytime _ _ _ hBhd hpushFT hpushFF
+  have h3 := PvsNP.Units.m2_ite_polytime _ _ _ hAhd h1 h2
+  have h4 := PvsNP.Units.m2_ite_polytime _ _ _ hBne h3 hstay
+  exact PvsNP.Units.m2_ite_polytime _ _ _ hAne h4 hstay
+
+/-- Once the second tail is empty, further steps change nothing. -/
+private theorem zStep_stay_nil_right (m : ℕ) (a acc : List Bool) :
+    (unpairB (zStep^[m] (pairB (pairB a []) acc))).2 = acc := by
+  induction m generalizing a acc with
+  | zero => simp [unpairB_pairB]
+  | succ m ih =>
+    rw [Function.iterate_succ_apply]
+    have hs : zStep (pairB (pairB a []) acc) = pairB (pairB a []) acc := by
+      unfold zStep sA sB sAcc
+      cases a <;> simp [unpairB_pairB]
+    rw [hs]
+    exact ih a acc
+
+/-- Iterating the step `|a|` times interleaves `a` and `b` onto `acc`. -/
+private theorem zStep_iter (a b acc : List Bool) :
+    (unpairB (zStep^[a.length] (pairB (pairB a b) acc))).2 =
+      acc ++ (List.zipWith (fun x y : Bool => [x, y]) a b).flatten := by
+  induction a generalizing b acc with
+  | nil =>
+    simp [unpairB_pairB]
+  | cons x a ih =>
+    cases b with
+    | nil =>
+      simp only [List.zipWith_nil_right, List.flatten_nil, List.append_nil]
+      exact zStep_stay_nil_right (x :: a).length (x :: a) acc
+    | cons y b =>
+      rw [List.length_cons, Function.iterate_succ_apply]
+      have hs : zStep (pairB (pairB (x :: a) (y :: b)) acc) =
+          pairB (pairB a b) (acc ++ [x, y]) := by
+        unfold zStep sA sB sAcc
+        simp only [unpairB_pairB, List.isEmpty_cons, Bool.not_false, ↓reduceIte,
+          List.headD_cons, List.tail_cons]
+        cases x <;> cases y <;> rfl
+      rw [hs, ih b (acc ++ [x, y])]
+      simp [List.append_assoc]
+
+theorem main :
+    PvsNP.PolyTimeComputable PvsNP.encodePair PvsNP.encodeString
+      (fun p : List Bool × List Bool =>
+        (List.zipWith (fun a b : Bool => [a, b]) p.1 p.2).flatten) := by
+  obtain ⟨cz⟩ := zStep_poly
+  have hiter : PvsNP.PolyTimeComputable PvsNP.Units.fr_ladner.PEqualNP.Library.encodePair
+      PvsNP.encodeString (fun p : List Bool × List Bool => zStep^[p.2.length] p.1) :=
+    Iter.iter_polyTime zStep cz 5 zStep_len
+  have hpb : PvsNP.PolyTimeComputable PvsNP.encodePair PvsNP.encodeString
+      (fun p : List Bool × List Bool => pairB p.1 p.2) := by
+    rw [← encodePair_eq]
+    exact cpt_pairB
+  have hinit : PvsNP.PolyTimeComputable PvsNP.encodeString PvsNP.encodeString
+      (fun s : List Bool => pairB s []) :=
+    cpt_pairB2 cpt_id (cpt_const [])
+  have hrunS : PvsNP.PolyTimeComputable PvsNP.encodeString PvsNP.encodeString
+      (fun s : List Bool => (unpairB (zStep^[(unpairB s).1.length] (pairB s []))).2) :=
+    cpt_unpairB2_1
+      (PvsNP.Units.m2_polytime_comp PvsNP.encodeString
+        PvsNP.Units.fr_ladner.PEqualNP.Library.encodePair PvsNP.encodeString
+        _ _ (cpt_pair hinit cpt_unpairB1) hiter)
+  have hcomp := PvsNP.Units.m2_polytime_comp PvsNP.encodePair PvsNP.encodeString PvsNP.encodeString
+    (fun p : List Bool × List Bool => pairB p.1 p.2)
+    (fun s : List Bool => (unpairB (zStep^[(unpairB s).1.length] (pairB s []))).2) hpb hrunS
+  have heq :
+      ((fun s : List Bool => (unpairB (zStep^[(unpairB s).1.length] (pairB s []))).2) ∘
+        (fun p : List Bool × List Bool => pairB p.1 p.2)) =
+      (fun p : List Bool × List Bool =>
+        (List.zipWith (fun a b : Bool => [a, b]) p.1 p.2).flatten) := by
+    funext ⟨a, b⟩
+    simp only [Function.comp_apply, unpairB_pairB]
+    have h := zStep_iter a b []
+    simpa using h
+  rwa [heq] at hcomp
+
+end PvsNP.Units.m2_tm_pair_zip_polytime
+
+/-- Interleaving the two strings of a pair bit by bit takes polynomial time (TM2). -/
+theorem PvsNP.Units.m2_tm_pair_zip_polytime :
+    PvsNP.PolyTimeComputable PvsNP.encodePair PvsNP.encodeString
+      (fun p : List Bool × List Bool =>
+        (List.zipWith (fun a b : Bool => [a, b]) p.1 p.2).flatten) :=
+  PvsNP.Units.m2_tm_pair_zip_polytime.main
