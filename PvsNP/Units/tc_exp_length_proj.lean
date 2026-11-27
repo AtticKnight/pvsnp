@@ -33,14 +33,13 @@ def query (z : W) : W :=
     word (unpairB (unpairB z).1).2 (unpairB z).2.length
 
 theorem query_poly : C query := by
-  have hp : C (fun z => hd (unpairB (unpairB z).1).1) :=
-    cpt_comp (cpt_comp cpt_unpairB1 cpt_unpairB1) cpt_hd
-  have hx : C (fun z => (unpairB (unpairB z).1).2) := cpt_comp cpt_unpairB1 cpt_unpairB2
-  have hc : C (fun z => cand (unpairB z).2.length) :=
-    cpt_iterGrow bf_cpt_succB 1 bf_succB_length cpt_unpairB2 (cpt_const [])
-  have hw : C (fun z => word (unpairB (unpairB z).1).2 (unpairB z).2.length) :=
-    cpt_comp (PvsNP.Units.m2_pair_build_polytime _ _ hx hc) PvsNP.Units.m2_np_length_projection.hG
-  exact cpt_app2 hp (cpt_cons1 false hw)
+  have hleft := cpt_comp cpt_unpairB1 cpt_unpairB1
+  have hp := cpt_comp hleft cpt_hd
+  have hx := cpt_comp cpt_unpairB1 cpt_unpairB2
+  have hc := cpt_iterGrow bf_cpt_succB 1 bf_succB_length cpt_unpairB2 (cpt_const [])
+  have hw := cpt_comp (PvsNP.Units.m2_pair_build_polytime _ _ hx hc) PvsNP.Units.m2_np_length_projection.hG
+  have h := cpt_app2 hp (cpt_cons1 false hw)
+  exact h
 
 def verify (d : W → Bool) (p : W × W) := d (query (pairB p.1 p.2))
 def search (d : W → Bool) (w : W) :=
@@ -49,9 +48,11 @@ def whole (d : W → Bool) (p : W × W) := search d (pairB p.1 p.2)
 
 theorem whole_poly (d : W → Bool) (h : PvsNP.PolyTimeComputable PvsNP.encodeString PvsNP.encodeAnswer d) :
     PvsNP.PolyTimeComputable PvsNP.encodePair PvsNP.encodeAnswer (whole d) := by
-  have hv : PvsNP.PolyTimeComputable PvsNP.encodePair PvsNP.encodeAnswer (verify d) :=
-    cpt_comp (cpt_comp cpt_pairB query_poly) h
-  exact cpt_comp cpt_pairB (PvsNP.Units.m2_bounded_unary_search_polytime _ hv)
+  have hq := cpt_comp cpt_pairB query_poly
+  have hv := cpt_comp hq h
+  have hs := PvsNP.Units.m2_bounded_unary_search_polytime (verify d) hv
+  have hend := cpt_comp cpt_pairB hs
+  exact hend
 
 theorem verify_at (d : W → Bool) (k : ℕ) (x : W) (i : ℕ) :
     verify d (pairB (pad k x) x, List.replicate i true) = d (pad k (word x i)) := by
@@ -59,7 +60,7 @@ theorem verify_at (d : W → Bool) (k : ℕ) (x : W) (i : ℕ) :
 
 theorem covered (k : ℕ) (hk : 0 < k) (x y : W) (h : y.length = x.length) :
     idx y ≤ (pairB (pad k x) x).length := by
-  have hn : x.length ≤ x.length ^ k := Nat.le_self_pow hk _
+  have hn : x.length ≤ x.length ^ k := Nat.le_self_pow (Nat.ne_of_gt hk) _
   have hh := Nat.pow_le_pow_right (by decide : 0 < 2) hn
   have hi := idx_bound y
   rw [h, pow_succ] at hi
