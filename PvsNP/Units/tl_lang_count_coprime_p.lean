@@ -13,7 +13,7 @@ theorem PvsNP.Units.tl_lang_count_coprime_p :
   have flipCount (x : List Bool) : (x.map (!·)).count true = x.count false := by
     induction x with
     | nil => rfl
-    | cons b xs ih => cases b <;> simp [List.count_cons, ih]
+    | cons b xs ih => cases b <;> simp [ih]
   have hfalse : PvsNP.PolyTimeComputable PvsNP.encodeString PvsNP.encodeString
       (fun x : List Bool => Nat.bits (x.count false)) := by
     simpa only [flipCount] using PvsNP.Units.m2_pair_build_polytime.cpt_comp
@@ -26,4 +26,5 @@ theorem PvsNP.Units.tl_lang_count_coprime_p :
   intro x
   have eqn := spec (counts x)
   change (Nat.gcd (val (Nat.bits (x.count true))) (val (Nat.bits (x.count false))) = 1 ↔ f (counts x) = true) at eqn
+  change (Nat.gcd (x.count true) (x.count false) = 1 ↔ f (counts x) = true)
   simpa only [val_bits] using eqn
