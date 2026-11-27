@@ -2,7 +2,7 @@ name: Check cubing and bitwise transducers
 
 on:
   push:
-    branches: [verify/nov27-cubes-bits]
+    branches: [verify/nov27-cubes-bits-explicit]
 
 permissions:
   contents: read

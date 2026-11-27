@@ -29,9 +29,11 @@ theorem PvsNP.Units.tf_fun_pow_const :
     PvsNP.Units.tf_fun_pair_mul
   have hsquare : PvsNP.PolyTimeComputable PvsNP.encodeString PvsNP.encodeString
       (fun x : List Bool => mulWords (x, x)) :=
-    PvsNP.Units.m2_polytime_comp _ _ _ _ _ hdup hmul
+    PvsNP.Units.m2_polytime_comp PvsNP.encodeString PvsNP.encodePair PvsNP.encodeString
+      (fun x : List Bool => (x, x)) mulWords hdup hmul
   have hp := PvsNP.Units.m2_pair_build_polytime _ _ hsquare hid
-  apply PvsNP.Units.tf_fun_pair_mul.cptE (PvsNP.Units.m2_polytime_comp _ _ _ _ _ hp hmul)
+  apply PvsNP.Units.tf_fun_pair_mul.cptE (PvsNP.Units.m2_polytime_comp PvsNP.encodeString PvsNP.encodePair PvsNP.encodeString
+    (fun x : List Bool => (mulWords (x, x), x)) mulWords hp hmul)
   intro x
   change Nat.bits (tf_fun_pow_const.value (Nat.bits (tf_fun_pow_const.value x * tf_fun_pow_const.value x)) *
     tf_fun_pow_const.value x) = Nat.bits (tf_fun_pow_const.value x ^ 3)
