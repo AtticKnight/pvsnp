@@ -27,14 +27,14 @@ theorem PvsNP.Units.m2_p_ne_np_ladner_props :
   refine ⟨L, hNP, hP, ?_, ?_, ?_⟩
   · by_contra hn
     apply hP
-    have he : L = ∅ := by
+    have he : L = (∅ : Set (List Bool)) := by
       ext x
       exact ⟨fun hx => (hn ⟨x, hx⟩).elim, fun hx => False.elim hx⟩
     rw [he]
     exact m2_p_trivial.1
   · by_contra hn
     apply hP
-    have hu : L = Set.univ := by
+    have hu : L = (Set.univ : Set (List Bool)) := by
       ext x
       refine ⟨fun _ => Set.mem_univ x, fun _ => ?_⟩
       by_contra hx
