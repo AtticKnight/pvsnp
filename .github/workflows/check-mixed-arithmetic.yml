@@ -2,7 +2,7 @@ name: Check mixed binary and unary addition
 
 on:
   push:
-    branches: [verify/nov27-unary-binary-addition]
+    branches: [verify/nov27-mixed-add-projections]
 
 permissions:
   contents: read

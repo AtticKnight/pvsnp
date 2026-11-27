@@ -15,7 +15,8 @@ theorem PvsNP.Units.m2_tm_binary_add_unary :
         Nat.bits (Nat.ofDigits (2 : ℕ) (p.1.map Bool.toNat) + p.2.length)) := by
   have right : PvsNP.PolyTimeComputable PvsNP.encodePair PvsNP.encodeString
       (fun p : List Bool × List Bool => Nat.bits p.2.length) :=
-    PvsNP.Units.m2_polytime_comp _ _ _ _ _
+    PvsNP.Units.m2_polytime_comp PvsNP.encodePair PvsNP.encodeString PvsNP.encodeString
+      (fun p : List Bool × List Bool => p.2) (fun w : List Bool => w.length.bits)
       PvsNP.Units.m2_pair_split_polytime.2.1 PvsNP.Units.m2_unary_to_binary_polytime
   have prepare := PvsNP.Units.m2_tm_pair_fork_polytime _ _
     PvsNP.Units.m2_pair_split_polytime.1 right
