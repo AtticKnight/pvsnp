@@ -2,7 +2,7 @@ import Mathlib
 import PvsNP.Defs
 import CookLevin
 import PvsNP.Units.m2_np_conp_one_inclusion
-import PvsNP.Units.m2_conp_in_exp
+import PvsNP.Units.m2_np_conp_subset_exp
 
 /-- Restrict the assumed EXP-to-NP inclusion to coNP, then use closure under taking complements. -/
 theorem PvsNP.Units.m2_np_eq_exp_np_conp :
@@ -14,4 +14,4 @@ theorem PvsNP.Units.m2_np_eq_exp_np_conp :
   intro incl
   apply PvsNP.Units.m2_np_conp_one_inclusion.2.1
   intro L hL
-  exact incl L (PvsNP.Units.m2_conp_in_exp L hL)
+  exact incl L (PvsNP.Units.m2_np_conp_subset_exp L (Or.inr hL))
