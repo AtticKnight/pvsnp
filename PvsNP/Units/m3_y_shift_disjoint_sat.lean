@@ -15,7 +15,7 @@ theorem PvsNP.Units.m3_y_shift_disjoint_sat :
     obtain ⟨p, _, rfl⟩ := List.mem_map.mp hm
     have small := hbound C hC l hl
     change l.2 ≠ p.2 + k
-    omega
+    exact Nat.ne_of_lt (Nat.lt_of_lt_of_le small (Nat.le_add_left k p.2))
   have inj : Function.Injective (fun v : var => v + k) := fun _ _ h => Nat.add_right_cancel h
   change SAT (N ++ M.map shift) ↔ SAT N ∧ SAT M
   rw [PvsNP.Units.m3_var_disjoint_conj N (M.map shift) disjointVars]
