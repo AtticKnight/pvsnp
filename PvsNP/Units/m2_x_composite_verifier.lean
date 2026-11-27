@@ -13,9 +13,7 @@ import PvsNP.Units.tl_lang_composite_np
 
 namespace PvsNP.Units.m2_x_composite_verifier
 
-open PvsNP.Units
-
-open tl_lang_composite_np (val val_bits cpt_bool_eq_const)
+open _root_.PvsNP.Units.tl_lang_composite_np (val val_bits cpt_bool_eq_const val_lt_two_pow bits_length_le_of_lt_two_pow)
 
 private theorem bits_empty_iff (n : ℕ) : Nat.bits n = [] ↔ n = 0 := by
   constructor
@@ -63,7 +61,6 @@ theorem verifier_poly :
     simp only [Bool.and_eq_true, decide_eq_true_eq, bits_empty_iff, Nat.dvd_iff_mod_eq_zero]
   rwa [agree] at allThree
 
-open tl_lang_composite_np (val val_bits val_lt_two_pow bits_length_le_of_lt_two_pow)
 
 /-- A proper divisor itself is a certificate no longer than the claimed composite. -/
 theorem certificate_correct :
@@ -74,7 +71,7 @@ theorem certificate_correct :
          Nat.ofDigits (2 : ℕ) (p.2.map Bool.toNat) < Nat.ofDigits (2 : ℕ) (p.1.map Bool.toNat) ∧
          Nat.ofDigits (2 : ℕ) (p.2.map Bool.toNat) ∣ Nat.ofDigits (2 : ℕ) (p.1.map Bool.toNat)))
       Polynomial.X := by
-  refine ⟨m2_x_composite_verifier.verifier_poly, fun x => ?_⟩
+  refine ⟨verifier_poly, fun x => ?_⟩
   change (∃ a b : ℕ, 1 < a ∧ 1 < b ∧ a * b = val x) ↔
     ∃ w : List Bool, w.length ≤ Polynomial.X.eval x.length ∧
       decide (1 < val w ∧ val w < val x ∧ val w ∣ val x) = true
