@@ -13,7 +13,7 @@ import PvsNP.Units.tl_lang_composite_np
 
 namespace PvsNP.Units.m2_x_composite_verifier
 
-open _root_.PvsNP.Units.tl_lang_composite_np (val val_bits cpt_bool_eq_const val_lt_two_pow bits_length_le_of_lt_two_pow)
+open PvsNP.Units.tl_lang_composite_np (val val_bits cpt_bool_eq_const val_lt_two_pow bits_length_le_of_lt_two_pow)
 
 private theorem bits_empty_iff (n : ℕ) : Nat.bits n = [] ↔ n = 0 := by
   constructor
