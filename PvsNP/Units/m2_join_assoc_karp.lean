@@ -25,8 +25,12 @@ theorem PvsNP.Units.m2_join_assoc_karp :
   let bc := tag B C
   let left := tag ab C
   let right := tag A bc
-  have noL : ∃ x : List Bool, x ∉ left := ⟨[], by simp [left, tag, PvsNP.Units.m2_join_assoc_karp.Tag]⟩
-  have noR : ∃ x : List Bool, x ∉ right := ⟨[], by simp [right, tag, PvsNP.Units.m2_join_assoc_karp.Tag]⟩
+  have noTag (X Y : Language Bool) : ∃ w : List Bool, w ∉ tag X Y := by
+    refine ⟨[], ?_⟩
+    change ¬ ((∃ y ∈ X, ([] : List Bool) = false :: y) ∨ (∃ y ∈ Y, ([] : List Bool) = true :: y))
+    rintro (⟨y, _, h⟩ | ⟨y, _, h⟩) <;> cases h
+  have noL : ∃ x : List Bool, x ∉ left := noTag ab C
+  have noR : ∃ x : List Bool, x ∉ right := noTag A bc
   have IA := PvsNP.Units.m2_join_karp_sides A B
   have IB := PvsNP.Units.m2_join_karp_sides B C
   have IL := PvsNP.Units.m2_join_karp_sides ab C

@@ -13,6 +13,6 @@ theorem PvsNP.Units.tf_fun_add_const :
     PvsNP.PolyTimeComputable PvsNP.encodeString PvsNP.encodeString (fun x : List Bool => Nat.bits (Nat.ofDigits (2 : ℕ) (x.map Bool.toNat) + 5)) := by
   have p := PvsNP.Units.m2_pair_build_polytime id (fun _ => [true, false, true])
     cpt_id (cpt_const [true, false, true])
-  have h := cpt_comp p PvsNP.Units.tf_fun_pair_add
+  have h := PvsNP.Units.m2_pair_build_polytime.cpt_comp p PvsNP.Units.tf_fun_pair_add
   have e : Nat.ofDigits (2 : ℕ) ([true, false, true].map Bool.toNat) = 5 := by decide
   simpa only [id_eq, e] using h
