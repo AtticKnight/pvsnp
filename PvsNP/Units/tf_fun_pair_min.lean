@@ -18,10 +18,14 @@ theorem PvsNP.Units.tf_fun_pair_min :
       PvsNP.Units.m2_tm_binary_half_double.stripLSB_eq_bits
   have left : PvsNP.PolyTimeComputable PvsNP.encodePair PvsNP.encodeString
       (fun p : List Bool × List Bool => Nat.bits (value p.1)) :=
-    PvsNP.Units.m2_polytime_comp _ _ _ _ _ PvsNP.Units.m2_pair_split_polytime.1 canonical
+    PvsNP.Units.m2_polytime_comp PvsNP.encodePair PvsNP.encodeString PvsNP.encodeString
+      (fun p : List Bool × List Bool => p.1) (fun xs : List Bool => Nat.bits (value xs))
+      PvsNP.Units.m2_pair_split_polytime.1 canonical
   have right : PvsNP.PolyTimeComputable PvsNP.encodePair PvsNP.encodeString
       (fun p : List Bool × List Bool => Nat.bits (value p.2)) :=
-    PvsNP.Units.m2_polytime_comp _ _ _ _ _ PvsNP.Units.m2_pair_split_polytime.2.1 canonical
+    PvsNP.Units.m2_polytime_comp PvsNP.encodePair PvsNP.encodeString PvsNP.encodeString
+      (fun p : List Bool × List Bool => p.2) (fun xs : List Bool => Nat.bits (value xs))
+      PvsNP.Units.m2_pair_split_polytime.2.1 canonical
   have choose := PvsNP.Units.m2_tm_pair_ite_polytime
     (fun p : List Bool × List Bool => decide (value p.1 ≤ value p.2))
     _ _ PvsNP.Units.m2_binary_le_polytime left right
