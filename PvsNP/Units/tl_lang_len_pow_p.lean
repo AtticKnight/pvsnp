@@ -46,7 +46,7 @@ theorem PvsNP.Units.tl_lang_len_pow_p :
       · have hpos : 1 ≤ k := Nat.one_le_iff_ne_zero.mpr hz
         calc
           k = k * 1 := (Nat.mul_one k).symm
-          _ ≤ k * k^2 := Nat.mul_le_mul_left k (by positivity)
+          _ ≤ k * k^2 := Nat.mul_le_mul_left k (Nat.succ_le_of_lt (pow_pos (by omega : 0 < k) 2))
           _ = k^3 := by ring
     omega
   · rintro ⟨k, _, hk⟩

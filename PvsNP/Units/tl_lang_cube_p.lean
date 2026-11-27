@@ -28,6 +28,7 @@ theorem PvsNP.Units.tl_lang_cube_p :
   constructor
   · rintro ⟨y, rfl⟩
     have len : (y ++ y ++ y).length / 3 = y.length := by simp only [List.length_append]; omega
-    simp only [len, List.append_assoc, List.take_left]
+    rw [len]
+    simp only [List.append_assoc, List.take_left]
   · intro h
     exact ⟨_, h⟩

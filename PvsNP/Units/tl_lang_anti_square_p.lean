@@ -8,6 +8,8 @@ import PvsNP.Units.m2_pair_build_polytime
 open PvsNP.Units.fr_ladner.PEqualNP.Library.Machines
 open PvsNP.Units.fr_ladner.PEqualNP.Library.Universal
 
+open PvsNP.Units.fr_ladner.PEqualNP.Library.Ladner
+
 namespace PvsNP.Units.tl_lang_anti_square_p
 
 private theorem mapNot :
@@ -17,7 +19,7 @@ private theorem mapNot :
   intro x
   induction x with
   | nil => rfl
-  | cons b x ih => simp [ih]
+  | cons b x ih => exact congrArg (List.cons (!b)) ih
 
 private def halves (x : List Bool) := unpairB (half x ++ false :: x)
 
