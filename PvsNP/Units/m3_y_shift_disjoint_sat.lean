@@ -15,7 +15,8 @@ private theorem mem_unshift (a : assgn) (k v : ℕ) :
   simp only [unshift, List.mem_map, List.mem_filter, decide_eq_true_eq]
   constructor
   · rintro ⟨n, ⟨hn, hkn⟩, h⟩
-    have eqn : n = v + k := by omega
+    change n - k = v at h
+    have eqn : n = v + k := (Nat.sub_add_cancel hkn).symm.trans (congrArg (· + k) h)
     simpa only [eqn] using hn
   · intro hv
     exact ⟨v + k, ⟨hv, by omega⟩, by omega⟩

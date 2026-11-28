@@ -9,7 +9,7 @@ open PvsNP.Units.tl_lang_unary_add_p
 open PvsNP.Units.fr_ladner.PEqualNP.Library.Universal
 
 /-- Copy the true bits that occur after exactly the selected number of separators. -/
-private def section (which q : Fin 3) (b : Bool) : Fin 3 × Option Bool :=
+private def copyField (which q : Fin 3) (b : Bool) : Fin 3 × Option Bool :=
   (nxt q b, if b && decide (q = which) then some true else none)
 
 private def word (a b c : ℕ) : List Bool :=
@@ -17,20 +17,20 @@ private def word (a b c : ℕ) : List Bool :=
     (false :: (List.replicate c true ++ []))))
 
 private theorem fields (a b c : ℕ) :
-    run (section 0) 0 (word a b c) = List.replicate a true ∧
-    run (section 1) 0 (word a b c) = List.replicate b true := by
+    run (copyField 0) 0 (word a b c) = List.replicate a true ∧
+    run (copyField 1) 0 (word a b c) = List.replicate b true := by
   unfold word
   constructor
-  · rw [run_rep_some (section 0) 0 true rfl, run, show section 0 0 false = (1, none) from rfl,
-      run_rep_none (section 0) 1 rfl, run, show section 0 1 false = (2, none) from rfl,
-      run_rep_none (section 0) 2 rfl]
+  · rw [run_rep_some (copyField 0) 0 true rfl, run, show copyField 0 0 false = (1, none) from rfl,
+      run_rep_none (copyField 0) 1 rfl, run, show copyField 0 1 false = (2, none) from rfl,
+      run_rep_none (copyField 0) 2 rfl]
     simp [run]
-  · rw [run_rep_none (section 1) 0 rfl, run, show section 1 0 false = (1, none) from rfl,
-      run_rep_some (section 1) 1 true rfl, run, show section 1 1 false = (2, none) from rfl,
-      run_rep_none (section 1) 2 rfl]
+  · rw [run_rep_none (copyField 1) 0 rfl, run, show copyField 1 0 false = (1, none) from rfl,
+      run_rep_some (copyField 1) 1 true rfl, run, show copyField 1 1 false = (2, none) from rfl,
+      run_rep_none (copyField 1) 2 rfl]
     simp [run]
 
-private def productField (x : List Bool) := mulU (run (section 0) 0 x) (run (section 1) 0 x)
+private def productField (x : List Bool) := mulU (run (copyField 0) 0 x) (run (copyField 1) 0 x)
 
 private theorem contents (a b c : ℕ) :
     productField (word a b c) = run δB 0 (word a b c) ↔ a * b = c := by
@@ -48,7 +48,7 @@ private theorem cost : PvsNP.PolyTimeComputable PvsNP.encodeString PvsNP.encodeA
   have shapeCost := cpt_eq_fun (run δC 0) (fun _ => [true,true]) (cpt_run δC 0)
     (PvsNP.Units.m2_const_polytime [true,true])
   have productCost : PvsNP.PolyTimeComputable PvsNP.encodeString PvsNP.encodeString productField :=
-    cpt_mulU2 (cpt_run (section 0) 0) (cpt_run (section 1) 0)
+    cpt_mulU2 (cpt_run (copyField 0) 0) (cpt_run (copyField 1) 0)
   exact PvsNP.Units.m2_bool_combine_polytime (· && ·) shapeOk _ shapeCost
     (cpt_eq_fun productField (run δB 0) productCost (cpt_run δB 0))
 
