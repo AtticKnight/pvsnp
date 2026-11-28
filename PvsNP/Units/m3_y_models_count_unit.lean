@@ -10,7 +10,7 @@ private theorem map_same (xs : List (List ℕ)) (f : List ℕ → List ℕ) (p :
   induction xs with
   | nil => rfl
   | cons a xs ih =>
-    cases test : p a <;> simp [List.filter_cons, h a, test, ih]
+    cases test : p a <;> simp [h a, test, ih]
 
 private theorem complementary (xs : List (List ℕ)) (f : List ℕ → List ℕ) (p : List ℕ → Bool)
     (h : ∀ a ∈ xs, p (f a) = !(p a)) :
@@ -20,7 +20,7 @@ private theorem complementary (xs : List (List ℕ)) (f : List ℕ → List ℕ)
   | cons a xs ih =>
     have next := ih (fun b hb => h b (List.mem_cons_of_mem a hb))
     have head := h a (by simp)
-    cases test : p a <;> simp [List.filter_cons, head, test] <;> omega
+    cases test : p a <;> simp [head, test] <;> omega
 
 end PvsNP.Units.m3_y_models_count_unit
 
@@ -46,11 +46,12 @@ theorem PvsNP.Units.m3_y_models_count_unit :
       rw [PvsNP.Units.m3_y_models_count_unit.complementary _ _ _ toggle,
         List.length_sublists, List.length_range]
     · have same (a : List ℕ) : p (a ++ [n]) = p a := by
-        simp [p, evalCnf, evalClause, evalLiteral, evalVar, he]
+        by_cases member : v ∈ a <;> simp [p, evalCnf, evalClause, evalLiteral, evalVar, member, he]
       rw [PvsNP.Units.m3_y_models_count_unit.map_same _ _ _ same]
+      have smaller : v < n := lt_of_le_of_ne (Nat.le_of_lt_succ hv) he
       have previous : ((List.range n).sublists.filter p).length = 2 ^ (n - 1) :=
-        ih (s, v) (by change v < n; omega)
+        ih (s, v) smaller
       rw [previous]
       cases n with
-      | zero => omega
+      | zero => exact (Nat.not_lt_zero v smaller).elim
       | succ m => simp [Nat.pow_succ, Nat.mul_two]
