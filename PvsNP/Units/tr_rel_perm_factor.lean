@@ -72,7 +72,8 @@ theorem PvsNP.Units.tr_rel_perm_factor :
       simp only [List.length_append]
       omega
     refine ⟨pre.length, List.mem_range.mpr ?_, (atIndex _).2 ?_⟩
-    · rw [pairB_length]
+    · change pre.length < (pairB u text).length + 1
+      rw [pairB_length]
       omega
     · rw [← h, List.append_assoc, List.drop_left, ← permutes.length_eq, List.take_left]
       exact permutes
