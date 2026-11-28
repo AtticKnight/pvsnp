@@ -25,7 +25,8 @@ theorem PvsNP.Units.tc_closure_pshuffle_np :
   suffices same : ({x : List Bool | ∃ u v : List Bool, u.length = v.length ∧
       x = (List.zipWith (fun a b => [a, b]) u v).flatten ∧ u ∈ L ∧ v ∈ R} : Language Bool) =
       parity ⊓ (track true L ⊓ track false R) by
-    simpa only [same] using accepted
+    rw [same]
+    exact accepted
   ext s
   change (∃ u v : List Bool, u.length = v.length ∧ s = (List.zipWith (fun a b => [a,b]) u v).flatten ∧
     u ∈ L ∧ v ∈ R) ↔ even s ∧ pick true s ∈ L ∧ pick false s ∈ R
